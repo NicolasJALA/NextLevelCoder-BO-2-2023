@@ -3,6 +3,7 @@ from dino_runner.utils.constants import SMALL_CACTUS
 import pygame
 
 class ObstacleManager:
+    
     def __init__(self):
         self.obstacles = []
         

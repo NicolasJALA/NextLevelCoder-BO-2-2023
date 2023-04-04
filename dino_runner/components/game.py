@@ -40,10 +40,12 @@ class Game:
         self.clock.tick(FPS)
         self.screen.fill((255, 255, 255))
         self.draw_background()
+
         self.player.draw(self.screen)
         self.obstacle_manager.draw(self.screen)
         pygame.display.update()
         pygame.display.flip()
+        
     def draw_background(self):
         image_width = BG.get_width()
         self.screen.blit(BG, (self.x_pos_bg, self.y_pos_bg))
