@@ -17,6 +17,7 @@ class ObstacleManager:
             if game.player.rect.colliderect(obstacle.rect):           
                     pygame.time.delay(500)
                     game.playing = False
+                    pygame.mixer.music.stop()
                     game.death_count += 1
                     break
     def draw(self, screen):

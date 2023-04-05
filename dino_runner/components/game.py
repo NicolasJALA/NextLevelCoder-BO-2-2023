@@ -1,4 +1,5 @@
 import pygame
+import os
 from dino_runner.components.obstacles.obstacle_manager import ObstacleManager
 from dino_runner.utils.constants import BG, ICON, SCREEN_HEIGHT, SCREEN_WIDTH, TITLE, FPS, COLORS, RUNNING, CLOUD
 from dino_runner.components.dinosaur import Dinosaur
@@ -22,11 +23,12 @@ class Game:
         self.points = 0
         self.game_runing = True
         self.death_count = 0
-        
+
     def execute(self):
+        Music_Game = pygame.mixer.Sound(os.path.join('Sound/Fondo.mp3'))
+        Music_Game.set_volume(0.5)
         self.running = True
-        pygame.mixer.music.load("Fondo.mp3")
-        pygame.mixer.music.play(2)
+        Music_Game.play(-1)
         while self.running:
             if not self.playing:
                 self.show_menu()
@@ -47,6 +49,7 @@ class Game:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.playing = False
+                
 
     def update(self):
         user_input = pygame.key.get_pressed()
