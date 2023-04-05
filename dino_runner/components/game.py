@@ -25,6 +25,8 @@ class Game:
         
     def execute(self):
         self.running = True
+        pygame.mixer.music.load("Fondo.mp3")
+        pygame.mixer.music.play(2)
         while self.running:
             if not self.playing:
                 self.show_menu()
@@ -80,6 +82,7 @@ class Game:
         self.x_pos_cloud -= self.game_speed
     
     def score(self):
+        
         self.points += 1
         text, text_rect = self.text_utils.get_score_element(self.points)
         self.screen.blit(text, text_rect)
