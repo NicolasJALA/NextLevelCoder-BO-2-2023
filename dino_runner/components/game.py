@@ -1,5 +1,6 @@
 import pygame
 import os
+from dino_runner.components.Lifes.LivesManager import LivesManager
 from dino_runner.components.obstacles.obstacle_manager import ObstacleManager
 from dino_runner.components.power_up_manager import PowerUpManager
 from dino_runner.utils.constants import BG, ICON, SCREEN_HEIGHT, SCREEN_WIDTH, TITLE, FPS, COLORS, RUNNING,DEFAULT_TYPE, HAMMER, SHIELD, FONT_STYLE, GAME_OVER
@@ -14,15 +15,16 @@ class Game:
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         self.clock = pygame.time.Clock()
         self.playing = False
-        self.game_speed = 15
+        self.game_speed = 10
         self.x_pos_bg = 0
         self.y_pos_bg = 380
         self.player = Dinosaur()
         self.obstacle_manager = ObstacleManager()
         self.power_up_manager = PowerUpManager()
+        self.lives_manager = LivesManager()
         self.cloud = Cloud()
         self.text_utils = TextUtils()
-        self.points = 0
+        self.score = 0
         self.game_runing = True
         self.death_count = 0
         self.historical_scores = []
@@ -47,6 +49,7 @@ class Game:
         self.playing = True
         self.obstacle_manager.reset_obstacles()
         self.power_up_manager.reset_power_ups()
+        self.lives_manager.reset_hearts()
         self.playing = True
         self.game_speed = 15
         self.score = 0
@@ -67,7 +70,7 @@ class Game:
         self.player.update(user_input)
         self.cloud.update(self.game_speed)
         self.obstacle_manager.update(self)
-        self.power_up_manager.update(self.points, self.game_speed, self.player)
+        self.power_up_manager.update(self.score, self.game_speed, self.player)
     def update_score(self):
         self.score += 1
         if self.score % 100 == 0:
@@ -87,6 +90,7 @@ class Game:
         self.draw_power_up_time()
         self.cloud.draw(self.screen)
         self.player.draw(self.screen)
+        self.lives_manager.draw(self.screen)
         self.obstacle_manager.draw(self.screen)
         self.power_up_manager.draw(self.screen)
         pygame.display.update()
@@ -117,6 +121,7 @@ class Game:
             else:
                 self.player.has_power_up = False
                 self.player.type = DEFAULT_TYPE
+                
     def place_text(self, font_sizes, pos_x, pos_y, text_message, color):
         font = pygame.font.Font(FONT_STYLE, font_sizes)
         text = font.render(text_message, True, color)
@@ -124,12 +129,7 @@ class Game:
         text_rect.center = (pos_x, pos_y)
         self.screen.blit(text, text_rect)       
     
-    def score(self):
-        
-        self.points += 1
-        text, text_rect = self.text_utils.get_score_element(self.points)
-        self.screen.blit(text, text_rect)
-    
+
     def show_menu(self):
         self.game_runing = True
         self.screen.fill(COLORS["white"])
@@ -157,24 +157,24 @@ class Game:
             self.print_text(20, "cactus can still kill you",  half_screen_width + 200, half_screen_height + 200)
             
         elif self.death_count > 0:
-            score, score_rect = self.text_utils.get_centered_message("Your Score: " + str(self.points), height=half_screen_height +50 )
+            score, score_rect = self.text_utils.get_centered_message("Your Score: " + str(self.score), height=half_screen_height +50 )
             death, death_rect = self.text_utils.get_centered_message("Death count: " + str(self.death_count), height=half_screen_height +100)  
             self.screen.blit(score, score_rect)
             self.screen.blit(death, death_rect)
             self.screen.blit(RUNNING[0], (half_screen_width - 20, half_screen_height - 140 ))
         
         else:
-            self.screen.blit(GAME_OVER,(half_screen_width - 160 , half_screen_height ))
+            self.place_text(50, 610, 80, "GAME OVER", (255, 0, 0))
             self.print_text(30, "Press any key to play again",  half_screen_width, half_screen_height + 100)
             self.print_text(30, f"Max score: {max(self.scores)}",  half_screen_width, half_screen_height + 150)
             self.print_text(30, f"Total Achieved: {sum(self.scores)}",  half_screen_width, half_screen_height + 200)
-            if len(self.historical_scores) > 0:
-                self.print_text(30, f"Highest score: {max(self.historical_scores)}",  half_screen_width , half_screen_height - 250)
+
 
         self.screen.blit(ICON,(half_screen_width - 20, half_screen_height - 140))
 
         pygame.display.update() 
         self.handle_key_event_on_menu()
+               
                
     def handle_key_event_on_menu(self):
         for event in pygame.event.get():
@@ -186,6 +186,9 @@ class Game:
                 exit()
             elif event.type == pygame.KEYDOWN:
                 self.run()
+                
+                
+                
     def print_text(self, font_size, print_string, rect_x, rect_y, color_text = (0, 0, 0)):
         font = pygame.font.Font(FONT_STYLE, font_size)
         text = font.render(print_string , True, color_text)
