@@ -35,7 +35,6 @@ class Game:
         Music_Game = pygame.mixer.Sound(os.path.join('Sound/Fondo.mp3'))
         Music_Game.set_volume(0.5)
         self.running = True
-        Music_Game.play(-1)
         while self.running:
             if not self.playing:
                 self.show_menu()
