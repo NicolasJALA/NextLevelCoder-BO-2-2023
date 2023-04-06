@@ -1,6 +1,11 @@
 from pygame.sprite import Sprite
-from dino_runner.utils.constants import RUNNING, DUCKING, JUMPING
+from dino_runner.utils.constants import RUNNING, DUCKING, JUMPING, DEFAULT_TYPE, DUCKING_HAMMER, DUCKING_SHIELD, HAMMER_TYPE
+from dino_runner.utils.constants import JUMPING_HAMMER, JUMPING_SHIELD, RUNNING_HAMMER, RUNNING_SHIELD, SHIELD_TYPE
 import pygame
+
+DUCK_IMG = {DEFAULT_TYPE: DUCKING, SHIELD_TYPE: DUCKING_SHIELD, HAMMER_TYPE: DUCKING_HAMMER}
+JUMP_IMG = {DEFAULT_TYPE: JUMPING, SHIELD_TYPE: JUMPING_SHIELD, HAMMER_TYPE: JUMPING_HAMMER}
+RUN_IMG = {DEFAULT_TYPE: RUNNING, SHIELD_TYPE: RUNNING_SHIELD, HAMMER_TYPE: RUNNING_HAMMER}
 
 class Dinosaur(Sprite):
     X_POS = 80
@@ -9,6 +14,7 @@ class Dinosaur(Sprite):
     JUMP_VEL = 8.5
     
     def __init__(self):
+        self.type = DEFAULT_TYPE
         self.image = RUNNING[0]
         self.rect = self.image.get_rect()
         self.rect.x = self.X_POS
@@ -19,6 +25,9 @@ class Dinosaur(Sprite):
         self.dino_jump = False
         self.dino_duck = False
         self.jump_vel = self.JUMP_VEL
+        
+        self.has_power_up = False
+        self.power_up_time_up = 0
         
     def run(self):
         self.image = RUNNING[0] if self.step_index < 5 else RUNNING[1]
